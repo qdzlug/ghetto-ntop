@@ -8,6 +8,11 @@ services:
     ports:
       - "5556:5556"
       - "2055:2055/udp"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "nprobe"
   ntopng:
     build: ./ntopng-docker
     restart: always         
@@ -17,11 +22,21 @@ services:
     ports:
       - "3000:3000"
       - "3001:3001"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "ntopng"
   redis:
     build: ./redis
     restart: always         
     volumes:
       - redis-data:/data
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "redis"
   elasticsearch:
     build:
       context: elasticsearch/
@@ -33,6 +48,11 @@ services:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "elastic"
   logstash:
     build:
       context: logstash/
@@ -43,6 +63,11 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     depends_on:
       - elasticsearch
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "logstash"
   kibana:
     build:
       context: kibana/
@@ -51,6 +76,11 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "kibana"
 volumes:
     redis-data:
       driver: "local"
