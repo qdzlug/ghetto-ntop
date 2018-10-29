@@ -1,4 +1,4 @@
-FROM darksheer/ubuntu:latest
+FROM ubuntu:latest
 MAINTAINER Javier Junquera <javier.junquera.sanchez@gmail.com>
 
 ENV WORKDIR /ntop
@@ -45,7 +45,7 @@ RUN apt-get update && \
 ##RUN ["chmod", "+x", "ntopng/ntopng"]
 
 
-RUN wget http://apt-stable.ntop.org/16.04/all/apt-ntop-stable.deb
+RUN wget http://apt-stable.ntop.org/18.04/all/apt-ntop-stable.deb
 
 RUN dpkg -i apt-ntop-stable.deb
 
@@ -56,6 +56,10 @@ RUN apt-get update && apt-get install -y  pfring nprobe ntopng ntopng-data n2dis
 COPY start.sh .
 
 RUN ["chmod", "+x", "start.sh"]
+
+# Put the config in for redis...
+
+COPY redis.conf /etc/redis/redis.conf
 
 EXPOSE 3000
 
