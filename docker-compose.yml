@@ -1,88 +1,20 @@
-version: "3"
+version: "2"
 services:
-  nprobe:
-    build: ./nprobe-docker
+  ntopng:
+    image: qdzlug/ntopng:10.2
     restart: always         
     depends_on:
       - redis
     ports:
-      - "5556:5556"
-      - "2055:2055/udp"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "nprobe"
-  ntopng:
-    build: ./ntopng-docker
-    restart: always         
-    depends_on:
-      - nprobe
-      - elasticsearch
-    ports:
       - "3000:3000"
       - "3001:3001"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "ntopng"
+      - "5556:5556"
+      - "2055:2055/udp"
   redis:
-    build: ./redis
+    image: qdzlug/redis:10.0
     restart: always         
     volumes:
       - redis-data:/data
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "redis"
-  elasticsearch:
-    build:
-      context: elasticsearch/
-    restart: always
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "elastic"
-  logstash:
-    build:
-      context: logstash/
-    restart: always
-    ports:
-      - "5000:5000"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    depends_on:
-      - elasticsearch
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "logstash"
-  kibana:
-    build:
-      context: kibana/
-    restart: always
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://127.0.0.1:12201"
-        tag: "kibana"
 volumes:
     redis-data:
-      driver: "local"
-    elasticsearch-data:
       driver: "local"

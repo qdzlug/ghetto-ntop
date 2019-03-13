@@ -61,6 +61,13 @@ RUN ["chmod", "+x", "start.sh"]
 
 COPY redis.conf /etc/redis/redis.conf
 
+# Cleanup
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 EXPOSE 3000
+EXPOSE 2055/udp
+EXPOSE 5556
+
+COPY conf.tar.gz  /var/lib/ntopng
 
 ENTRYPOINT ./start.sh
